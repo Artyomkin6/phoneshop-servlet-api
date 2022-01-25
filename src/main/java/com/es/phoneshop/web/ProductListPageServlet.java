@@ -1,6 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.DemoData;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.ServletException;
@@ -11,12 +12,13 @@ import java.io.IOException;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
+    private DemoData demoData = new DemoData();
 
     @Override
     public void init() throws ServletException {
         super.init();
         productDao = new ArrayListProductDao();
-        ((ArrayListProductDao) productDao).setSampleProducts();
+        demoData.setDemoProducts(productDao);
     }
 
     @Override
