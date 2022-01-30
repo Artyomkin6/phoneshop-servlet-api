@@ -3,6 +3,8 @@ package com.es.phoneshop.web;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.DemoData;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.SortField;
+import com.es.phoneshop.model.product.SortOrder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +25,10 @@ public class ProductListPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("products", productDao.findProducts());
+        String query = request.getParameter("query");
+        SortField sortField = SortField.fromName(request.getParameter("sortField"));
+        SortOrder sortOrder = SortOrder.fromName(request.getParameter("sortOrder"));
+        request.setAttribute("products", productDao.findProducts(query, sortField, sortOrder));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }

@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
-import java.util.concurrent.locks.ReadWriteLock;
 
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products;
@@ -40,11 +40,19 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public List<Product> findProducts() {
+        return findProducts("", null, null);
+    }
+
+    @Override
+    public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         LOCK.readLock().lock();
         try {
             return products.stream()
                     .filter(product -> !(product.getPrice().equals(BigDecimal.ZERO)))
                     .filter(product -> product.getStock() > 0)
+                    .filter(new ProductSearchPredicate(query))
+                    .sorted(new ProductSearchComparator(query))
+                    .sorted(new ProductSortComparator(sortField, sortOrder))
                     .collect(Collectors.toList());
         } finally {
             LOCK.readLock().unlock();
