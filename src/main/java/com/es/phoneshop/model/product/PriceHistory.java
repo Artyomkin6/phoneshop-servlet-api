@@ -7,6 +7,8 @@ import java.util.Calendar;
 public class PriceHistory {
     private Calendar startDate;
     private BigDecimal price;
+    private static final SimpleDateFormat DATE_FORMATTER
+            = new SimpleDateFormat("d MMM yyyy");
 
     public PriceHistory(Calendar startDate, BigDecimal price) {
         this.startDate = startDate;
@@ -30,7 +32,6 @@ public class PriceHistory {
     }
 
     public String getStringDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("d MMM yyyy");
-        return formatter.format(startDate.getTime());
+        return DATE_FORMATTER.format(startDate.getTime());
     }
 }

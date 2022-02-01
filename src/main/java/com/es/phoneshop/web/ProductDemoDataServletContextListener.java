@@ -9,6 +9,8 @@ import javax.servlet.ServletContextListener;
 
 public class ProductDemoDataServletContextListener implements ServletContextListener {
     private ProductDao productDao;
+    private static final String DEMO_DATA_PARAMETER
+            = "setDemoData";
 
     public ProductDemoDataServletContextListener() {
         this.productDao = ArrayListProductDao.getInstance();
@@ -18,7 +20,7 @@ public class ProductDemoDataServletContextListener implements ServletContextList
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         String setDemoData = servletContextEvent
                 .getServletContext()
-                .getInitParameter("setDemoData");
+                .getInitParameter(DEMO_DATA_PARAMETER);
         if (Boolean.parseBoolean(setDemoData)) {
             new DemoData().setDemoProducts(productDao);
         }
