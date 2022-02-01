@@ -1,7 +1,10 @@
 package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Currency;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Product {
     private Long id;
@@ -13,6 +16,7 @@ public class Product {
     private Currency currency;
     private int stock;
     private String imageUrl;
+    private List<PriceHistory> histories;
 
     public Product() {
     }
@@ -90,5 +94,15 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<PriceHistory> getHistories() {
+        return histories.stream()
+                .sorted(Comparator.comparing(PriceHistory::getStartDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public void setHistories(List<PriceHistory> histories) {
+        this.histories = histories;
     }
 }

@@ -18,14 +18,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 public class ArrayListProductDaoTest {
-    private ProductDao productDao;
+    private ProductDao productDao = ArrayListProductDao.getInstance();
     private DemoData demoData;
     private Product defaultProduct;
     private final Currency USD = Currency.getInstance("USD");
 
     @Before
     public void setup() {
-        productDao = new ArrayListProductDao();
+        ((ArrayListProductDao) productDao).deleteAll();
         demoData = new DemoData();
         defaultProduct = new Product(
                 "sgs",
@@ -99,7 +99,7 @@ public class ArrayListProductDaoTest {
     @Test
     public void testGetProductWithNonExistingId() {
         long nonExistingId = -1L;
-        exceptionRule.expect(NoSuchElementException.class);
+        exceptionRule.expect(ProductNotFoundException.class);
         productDao.getProduct(nonExistingId);
     }
 
@@ -136,7 +136,7 @@ public class ArrayListProductDaoTest {
         assertNotNull(productDao.getProduct(id));
         productDao.delete(id);
         assertTrue(productDao.findProducts().isEmpty());
-        exceptionRule.expect(NoSuchElementException.class);
+        exceptionRule.expect(ProductNotFoundException.class);
         assertNull(productDao.getProduct(id));
     }
 

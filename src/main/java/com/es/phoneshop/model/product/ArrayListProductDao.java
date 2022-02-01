@@ -3,7 +3,7 @@ package com.es.phoneshop.model.product;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -11,28 +11,28 @@ import java.util.stream.Collectors;
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products;
     private long nextId = 1;
+    private static ArrayListProductDao instance;
     private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
 
-    public ArrayListProductDao() {
+    private ArrayListProductDao() {
         products = new ArrayList<>();
     }
 
-    private void addWithValidation(Product product) throws InvalidProductException {
-        if (ProductValidator.validateProduct(product)) {
-            products.add(product);
-        } else {
-            throw new InvalidProductException();
+    public static synchronized ArrayListProductDao getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new ArrayListProductDao();
         }
+        return instance;
     }
 
     @Override
-    public Product getProduct(Long id) throws NoSuchElementException {
+    public Product getProduct(Long id) throws ProductNotFoundException {
         LOCK.readLock().lock();
         try {
             return products.stream()
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
-                    .get();
+                    .orElseThrow(() -> new ProductNotFoundException(id));
         } finally {
             LOCK.readLock().unlock();
         }
@@ -78,11 +78,29 @@ public class ArrayListProductDao implements ProductDao {
         }
     }
 
+    private void addWithValidation(Product product) throws InvalidProductException {
+        if (ProductValidator.validateProduct(product)) {
+            products.add(product);
+        } else {
+            throw new InvalidProductException();
+        }
+    }
+
     @Override
     public void delete(Long id) {
         LOCK.writeLock().lock();
         try {
             products.removeIf(product -> id.equals(product.getId()));
+        } finally {
+            LOCK.writeLock().unlock();
+        }
+    }
+
+    public void deleteAll() {
+        LOCK.writeLock().lock();
+        try {
+            products.clear();
+            nextId = 1;
         } finally {
             LOCK.writeLock().unlock();
         }
