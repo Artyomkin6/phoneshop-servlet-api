@@ -5,7 +5,10 @@ import com.es.phoneshop.model.cart.DefaultCartService;
 import com.es.phoneshop.model.cart.NotEnoughStockException;
 import com.es.phoneshop.model.cart.WrongQuantityException;
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.recent_products.DefaultRecentProductsService;
+import com.es.phoneshop.model.recent_products.RecentProductsService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,14 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Queue;
 
 public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
+    private RecentProductsService recentProductsService;
     private static final String PRODUCT_ATTRIBUTE = "product";
     private static final String CART_ATTRIBUTE = "cart";
     private static final String ERROR_MESSAGE_ATTRIBUTE = "error";
     private static final String QUANTITY_PARAMETER = "quantity";
+    private static final String RECENT_PRODUCTS_PARAMETER = "recentProducts";
     private static final String PRODUCT_DETAILS_PAGE_PATH
             = "/WEB-INF/pages/productDetails.jsp";
     private static final String ERROR_NOT_A_NUMBER = "Not a number";
@@ -36,13 +42,17 @@ public class ProductDetailsPageServlet extends HttpServlet {
         super.init();
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        recentProductsService = DefaultRecentProductsService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = parseProductId(request);
+        Queue<Product> recentProducts = recentProductsService.getRecentProducts(request);
+        recentProductsService.add(recentProducts, productDao.getProduct(productId));
         request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getProduct(productId));
         request.setAttribute(CART_ATTRIBUTE, cartService.getCart(request));
+        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProductsService.getRecentProducts(request));
         request.getRequestDispatcher(PRODUCT_DETAILS_PAGE_PATH).forward(request, response);
     }
 

@@ -5,7 +5,6 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
