@@ -1,7 +1,6 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.DemoData;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
@@ -14,7 +13,6 @@ import java.io.IOException;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
-    private DemoData demoData = new DemoData();
     private static final String QUERY_PARAMETER = "query";
     private static final String SORT_FIELD_PARAMETER = "sortField";
     private static final String SORT_ORDER_PARAMETER = "sortOrder";
