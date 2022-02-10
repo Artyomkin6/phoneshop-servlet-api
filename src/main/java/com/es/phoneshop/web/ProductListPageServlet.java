@@ -1,6 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
@@ -12,10 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Queue;
 
 public class ProductListPageServlet extends HttpServlet {
-    private ProductDao productDao;
-    private RecentProductsService recentProductsService;
     private static final String QUERY_PARAMETER = "query";
     private static final String SORT_FIELD_PARAMETER = "sortField";
     private static final String SORT_ORDER_PARAMETER = "sortOrder";
@@ -23,6 +23,9 @@ public class ProductListPageServlet extends HttpServlet {
     private static final String RECENT_PRODUCTS_PARAMETER = "recentProducts";
     private static final String PRODUCT_LIST_PAGE_PATH
             = "/WEB-INF/pages/productList.jsp";
+
+    private ProductDao productDao;
+    private RecentProductsService recentProductsService;
 
 
     @Override
@@ -37,8 +40,12 @@ public class ProductListPageServlet extends HttpServlet {
         String query = request.getParameter(QUERY_PARAMETER);
         SortField sortField = SortField.fromName(request.getParameter(SORT_FIELD_PARAMETER));
         SortOrder sortOrder = SortOrder.fromName(request.getParameter(SORT_ORDER_PARAMETER));
+
         request.setAttribute(PRODUCT_LIST_PARAMETER, productDao.findProducts(query, sortField, sortOrder));
-        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProductsService.getRecentProducts(request));
+
+        Queue<Product> recentProducts = recentProductsService.getRecentProducts(request.getSession());
+        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProducts);
+
         request.getRequestDispatcher(PRODUCT_LIST_PAGE_PATH).forward(request, response);
     }
 }

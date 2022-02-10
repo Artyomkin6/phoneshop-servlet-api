@@ -9,11 +9,13 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultCartService implements CartService {
+    private static final String CART_SESSION_ATTRIBUTE
+            = DefaultCartService.class.getName() + ".class";
+    private final ReentrantLock LOCK = new ReentrantLock();
+
+    private static CartService instance;
     private Cart cart;
     private ProductDao productDao;
-    private static CartService instance;
-    private final ReentrantLock LOCK = new ReentrantLock();
-    private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".class";
 
     private DefaultCartService() {
         productDao = ArrayListProductDao.getInstance();
@@ -41,7 +43,7 @@ public class DefaultCartService implements CartService {
     @Override
     public void add(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException {
         validateQuantity(quantity);
-        checkStock(productId, quantity);
+        checkStock(cart, productId, quantity);
 
         LOCK.lock();
         try {
@@ -67,9 +69,9 @@ public class DefaultCartService implements CartService {
         }
     }
 
-    private void checkStock(Long productId, int quantity) throws NotEnoughStockException {
+    private void checkStock(Cart cart, Long productId, int quantity) throws NotEnoughStockException {
         Product currentProduct = productDao.getProduct(productId);
-        int cartQuantity = getProductQuantity(productId);
+        int cartQuantity = getProductQuantity(cart, productId);
         boolean enoughStock =
                 (currentProduct.getStock() >= (quantity + cartQuantity));
         if (!enoughStock) {
@@ -77,7 +79,7 @@ public class DefaultCartService implements CartService {
         }
     }
 
-    private int getProductQuantity(Long productId) {
+    private int getProductQuantity(Cart cart, Long productId) {
         CartItem currentItem = cart.getItems().stream()
                 .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
                 .findAny()

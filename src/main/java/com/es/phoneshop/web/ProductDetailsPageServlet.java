@@ -20,9 +20,6 @@ import java.text.ParseException;
 import java.util.Queue;
 
 public class ProductDetailsPageServlet extends HttpServlet {
-    private ProductDao productDao;
-    private CartService cartService;
-    private RecentProductsService recentProductsService;
     private static final String PRODUCT_ATTRIBUTE = "product";
     private static final String CART_ATTRIBUTE = "cart";
     private static final String ERROR_MESSAGE_ATTRIBUTE = "error";
@@ -37,6 +34,10 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String SUCCESS_MESSAGE = "Added to cart successfully";
     private static final String PATH_FORMAT = "%s/products/%d?message=%s";
 
+    private ProductDao productDao;
+    private CartService cartService;
+    private RecentProductsService recentProductsService;
+
     @Override
     public void init() throws ServletException {
         super.init();
@@ -48,11 +49,11 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = parseProductId(request);
-        Queue<Product> recentProducts = recentProductsService.getRecentProducts(request);
-        recentProductsService.add(recentProducts, productDao.getProduct(productId));
+        Queue<Product> recentProducts = recentProductsService.getRecentProducts(request.getSession());
+        recentProductsService.addRecentProduct(recentProducts, productDao.getProduct(productId));
         request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getProduct(productId));
         request.setAttribute(CART_ATTRIBUTE, cartService.getCart(request));
-        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProductsService.getRecentProducts(request));
+        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProducts);
         request.getRequestDispatcher(PRODUCT_DETAILS_PAGE_PATH).forward(request, response);
     }
 

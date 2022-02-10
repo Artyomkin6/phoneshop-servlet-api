@@ -5,10 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class PriceHistory {
-    private Calendar startDate;
-    private BigDecimal price;
     private static final SimpleDateFormat DATE_FORMATTER
             = new SimpleDateFormat("d MMM yyyy");
+
+    private Calendar startDate;
+    private BigDecimal price;
 
     public PriceHistory(Calendar startDate, BigDecimal price) {
         this.startDate = startDate;

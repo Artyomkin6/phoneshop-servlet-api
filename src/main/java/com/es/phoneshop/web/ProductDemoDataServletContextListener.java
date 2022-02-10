@@ -8,9 +8,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class ProductDemoDataServletContextListener implements ServletContextListener {
-    private ProductDao productDao;
     private static final String DEMO_DATA_PARAMETER
             = "setDemoData";
+
+    private ProductDao productDao;
 
     public ProductDemoDataServletContextListener() {
         this.productDao = ArrayListProductDao.getInstance();

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Product {
@@ -104,5 +105,29 @@ public class Product {
 
     public void setHistories(List<PriceHistory> histories) {
         this.histories = histories;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Product product = (Product) object;
+        return stock == product.stock
+                && Objects.equals(id, product.id)
+                && Objects.equals(code, product.code)
+                && Objects.equals(description, product.description)
+                && Objects.equals(price, product.price)
+                && Objects.equals(currency, product.currency)
+                && Objects.equals(imageUrl, product.imageUrl)
+                && Objects.equals(histories, product.histories);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code, description, price, currency, stock, imageUrl, histories);
     }
 }
