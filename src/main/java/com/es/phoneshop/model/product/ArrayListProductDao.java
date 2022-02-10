@@ -9,10 +9,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
+    private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
+
+    private static ArrayListProductDao instance;
     private List<Product> products;
     private long nextId = 1;
-    private static ArrayListProductDao instance;
-    private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
 
     private ArrayListProductDao() {
         products = new ArrayList<>();

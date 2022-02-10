@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ProductPriceHistoryPageServlet extends HttpServlet {
-    private ProductDao productDao;
     private static final String PRODUCT_ATTRIBUTE = "product";
     private static final String PRODUCT_PRICE_HISTORY_PAGE_PATH
             = "/WEB-INF/pages/productPriceHistory.jsp";
+
+    private ProductDao productDao;
 
     @Override
     public void init() throws ServletException {

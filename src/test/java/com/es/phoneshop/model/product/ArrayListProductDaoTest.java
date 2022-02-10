@@ -17,10 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 public class ArrayListProductDaoTest {
+    private final Currency USD = Currency.getInstance("USD");
+
     private ProductDao productDao = ArrayListProductDao.getInstance();
     private DemoData demoData;
     private Product defaultProduct;
-    private final Currency USD = Currency.getInstance("USD");
 
     @Before
     public void setup() {

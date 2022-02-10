@@ -56,13 +56,13 @@ public class DemoData {
 
     public void setDemoPriceHistory(Product product) {
         Calendar startDate = new GregorianCalendar(2021, Calendar.JANUARY, 12);
-        BigDecimal startPrice = new BigDecimal(100);
+        BigDecimal startPrice = product.getPrice();
         List<PriceHistory> histories = new ArrayList<>();
-        for (int i = 0; i < 12; ++i) {
+        for (int i = 0; i < 5; ++i) {
             histories.add(new PriceHistory(startDate, startPrice));
             startDate = (Calendar) startDate.clone();
-            startDate.add(Calendar.MONTH, 1);
-            startPrice = startPrice.add(BigDecimal.valueOf(10));
+            startDate.add(Calendar.MONTH, -1);
+            startPrice = startPrice.subtract(BigDecimal.valueOf(10));
         }
         product.setHistories(histories);
     }

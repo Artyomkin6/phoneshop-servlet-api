@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
+<jsp:useBean id="recentProducts" type="java.util.Queue" scope="request"/>
 <tags:master pageTitle="Product List">
   <p>
     Welcome to Expert-Soft training!
@@ -46,4 +47,28 @@
       </tr>
     </c:forEach>
   </table>
+  <c:if test="${not empty recentProducts}">
+    <h2>
+      Recently viewed
+    </h2>
+    <table>
+      <tr>
+        <c:forEach var="recentProduct" items="${recentProducts}">
+          <td>
+            <p>
+              <img class="product-tile" src="${recentProduct.imageUrl}">
+            </p>
+            <p>
+              <a href="${pageContext.servletContext.contextPath}/products/${recentProduct.id}">
+                ${recentProduct.description}
+              </a>
+            </p>
+            <p class="price">
+              <fmt:formatNumber value="${recentProduct.price}" type="currency" currencySymbol="${recentProduct.currency.symbol}"/>
+            </p>
+          </td>
+        </c:forEach>
+      </tr>
+    </table>
+  </c:if>
 </tags:master>
