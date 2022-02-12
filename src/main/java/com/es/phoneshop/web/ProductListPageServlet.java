@@ -16,11 +16,11 @@ import java.io.IOException;
 import java.util.Queue;
 
 public class ProductListPageServlet extends HttpServlet {
+    private static final String PRODUCT_LIST_ATTRIBUTE = "products";
+    private static final String RECENT_PRODUCTS_ATTRIBUTE = "recentProducts";
     private static final String QUERY_PARAMETER = "query";
     private static final String SORT_FIELD_PARAMETER = "sortField";
     private static final String SORT_ORDER_PARAMETER = "sortOrder";
-    private static final String PRODUCT_LIST_PARAMETER = "products";
-    private static final String RECENT_PRODUCTS_PARAMETER = "recentProducts";
     private static final String PRODUCT_LIST_PAGE_PATH
             = "/WEB-INF/pages/productList.jsp";
 
@@ -41,10 +41,10 @@ public class ProductListPageServlet extends HttpServlet {
         SortField sortField = SortField.fromName(request.getParameter(SORT_FIELD_PARAMETER));
         SortOrder sortOrder = SortOrder.fromName(request.getParameter(SORT_ORDER_PARAMETER));
 
-        request.setAttribute(PRODUCT_LIST_PARAMETER, productDao.findProducts(query, sortField, sortOrder));
+        request.setAttribute(PRODUCT_LIST_ATTRIBUTE, productDao.findProducts(query, sortField, sortOrder));
 
         Queue<Product> recentProducts = recentProductsService.getRecentProducts(request.getSession());
-        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProducts);
+        request.setAttribute(RECENT_PRODUCTS_ATTRIBUTE, recentProducts);
 
         request.getRequestDispatcher(PRODUCT_LIST_PAGE_PATH).forward(request, response);
     }

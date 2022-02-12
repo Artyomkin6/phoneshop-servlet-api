@@ -23,8 +23,8 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String PRODUCT_ATTRIBUTE = "product";
     private static final String CART_ATTRIBUTE = "cart";
     private static final String ERROR_MESSAGE_ATTRIBUTE = "error";
+    private static final String RECENT_PRODUCTS_ATTRIBUTE = "recentProducts";
     private static final String QUANTITY_PARAMETER = "quantity";
-    private static final String RECENT_PRODUCTS_PARAMETER = "recentProducts";
     private static final String PRODUCT_DETAILS_PAGE_PATH
             = "/WEB-INF/pages/productDetails.jsp";
     private static final String ERROR_NOT_A_NUMBER = "Not a number";
@@ -53,7 +53,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         recentProductsService.addRecentProduct(recentProducts, productDao.getProduct(productId));
         request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getProduct(productId));
         request.setAttribute(CART_ATTRIBUTE, cartService.getCart(request));
-        request.setAttribute(RECENT_PRODUCTS_PARAMETER, recentProducts);
+        request.setAttribute(RECENT_PRODUCTS_ATTRIBUTE, recentProducts);
         request.getRequestDispatcher(PRODUCT_DETAILS_PAGE_PATH).forward(request, response);
     }
 
@@ -62,8 +62,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = parseProductId(request);
         int quantity;
         try {
-            NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(request.getParameter(QUANTITY_PARAMETER)).intValue();
+            quantity = parseQuantity(request.getParameter(QUANTITY_PARAMETER), request);
         } catch (ParseException exception) {
             request.setAttribute(ERROR_MESSAGE_ATTRIBUTE, ERROR_NOT_A_NUMBER);
             doGet(request, response);
@@ -82,6 +81,11 @@ public class ProductDetailsPageServlet extends HttpServlet {
             request.setAttribute(ERROR_MESSAGE_ATTRIBUTE, ERROR_NOT_ENOUGH_STOCK);
             doGet(request, response);
         }
+    }
+
+    private int parseQuantity(String quantityString, HttpServletRequest request) throws ParseException {
+        NumberFormat format = NumberFormat.getInstance(request.getLocale());
+        return format.parse(quantityString).intValue();
     }
 
     private Long parseProductId(HttpServletRequest request) {

@@ -10,7 +10,7 @@
     Welcome to Expert-Soft training!
   </p>
   <form>
-    <input name="query" value="${param.query}">
+    <input name="query" value="${param.query}" placeholder="Search product...">
     <button>Search</button>
   </form>
   <table>

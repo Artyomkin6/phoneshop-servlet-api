@@ -43,7 +43,7 @@ public class DefaultCartService implements CartService {
     @Override
     public void add(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException {
         validateQuantity(quantity);
-        checkStock(cart, productId, quantity);
+        checkAddStock(cart, productId, quantity);
 
         LOCK.lock();
         try {
@@ -63,17 +63,36 @@ public class DefaultCartService implements CartService {
         }
     }
 
+    @Override
+    public void update(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException {
+        validateQuantity(quantity);
+        checkStock(productId, quantity);
+
+        LOCK.lock();
+        try {
+            cart.getItems().stream()
+                    .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
+                    .forEach(cartItem -> cartItem.setQuantity(quantity));
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
     private void validateQuantity(int quantity) throws WrongQuantityException {
         if (quantity <= 0) {
             throw new WrongQuantityException();
         }
     }
 
-    private void checkStock(Cart cart, Long productId, int quantity) throws NotEnoughStockException {
-        Product currentProduct = productDao.getProduct(productId);
+    private void checkAddStock(Cart cart, Long productId, int addQuantity) throws NotEnoughStockException {
         int cartQuantity = getProductQuantity(cart, productId);
+        checkStock(productId, cartQuantity + addQuantity);
+    }
+
+    private void checkStock(Long productId, int quantity) throws NotEnoughStockException {
+        Product currentProduct = productDao.getProduct(productId);
         boolean enoughStock =
-                (currentProduct.getStock() >= (quantity + cartQuantity));
+                (currentProduct.getStock() >= quantity);
         if (!enoughStock) {
             throw new NotEnoughStockException();
         }
