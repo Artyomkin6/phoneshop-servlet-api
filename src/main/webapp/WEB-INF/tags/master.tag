@@ -15,6 +15,7 @@
     </a>
     <a href="${pageContext.servletContext.contextPath}/cart">
       <img src="${pageContext.servletContext.contextPath}/images/cart.png"/>
+      <jsp:include page="/cart/minicart"/>
     </a>
   </header>
   <main>

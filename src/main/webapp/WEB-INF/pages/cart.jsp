@@ -6,6 +6,12 @@
 <jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
 <tags:master pageTitle="Cart">
   <p/>
+  <p>
+    Total quantity: ${cart.totalQuantity}
+  </p>
+  <p>
+    Total cost: <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${cart.currency.symbol}"/>
+  </p>
   <c:if test="${not empty param.message and empty errors}">
     <div class="success">
       ${param.message}
@@ -29,6 +35,9 @@
           </td>
           <td class="price">
             Price
+          </td>
+          <td>
+            Delete item
           </td>
         </tr>
       </thead>
@@ -63,6 +72,12 @@
               <fmt:formatNumber value="${item.product.price}" type="currency" currencySymbol="${item.product.currency.symbol}"/>
             </tags:popupWindow>
           </td>
+          <td>
+            <button form="deleteCartItem" 
+                    formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${item.product.id}">
+              Delete
+            </button>
+          </td>
         </tr>
       </c:forEach>
     </table>
@@ -71,5 +86,7 @@
         Update
       </button>
     </p>
+  </form>
+  <form id="deleteCartItem" method="post">
   </form>
 </tags:master>

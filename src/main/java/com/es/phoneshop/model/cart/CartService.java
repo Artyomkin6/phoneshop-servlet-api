@@ -8,4 +8,6 @@ public interface CartService {
     void add(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException;
 
     void update(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException;
+
+    void delete(Cart cart, Long productId);
 }

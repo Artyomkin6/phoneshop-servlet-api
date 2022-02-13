@@ -7,9 +7,6 @@
 <jsp:useBean id="recentProducts" type="java.util.Queue" scope="request"/>
 <tags:master pageTitle="Product Details">
   <p>
-    Cart: ${cart}
-  </p>
-  <p>
     ${product.description}
   </p>
   <c:if test="${not empty error}">

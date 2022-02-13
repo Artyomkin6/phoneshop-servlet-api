@@ -5,6 +5,7 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -58,6 +59,7 @@ public class DefaultCartService implements CartService {
             } else {
                 currentItem.setQuantity(currentItem.getQuantity() + quantity);
             }
+            recalculateCart(cart);
         } finally {
             LOCK.unlock();
         }
@@ -73,6 +75,20 @@ public class DefaultCartService implements CartService {
             cart.getItems().stream()
                     .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
                     .forEach(cartItem -> cartItem.setQuantity(quantity));
+            recalculateCart(cart);
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        LOCK.lock();
+        try {
+            cart.getItems().removeIf(
+                    cartItem -> productId.equals(cartItem.getProduct().getId())
+            );
+            recalculateCart(cart);
         } finally {
             LOCK.unlock();
         }
@@ -84,11 +100,6 @@ public class DefaultCartService implements CartService {
         }
     }
 
-    private void checkAddStock(Cart cart, Long productId, int addQuantity) throws NotEnoughStockException {
-        int cartQuantity = getProductQuantity(cart, productId);
-        checkStock(productId, cartQuantity + addQuantity);
-    }
-
     private void checkStock(Long productId, int quantity) throws NotEnoughStockException {
         Product currentProduct = productDao.getProduct(productId);
         boolean enoughStock =
@@ -96,6 +107,11 @@ public class DefaultCartService implements CartService {
         if (!enoughStock) {
             throw new NotEnoughStockException();
         }
+    }
+
+    private void checkAddStock(Cart cart, Long productId, int addQuantity) throws NotEnoughStockException {
+        int cartQuantity = getProductQuantity(cart, productId);
+        checkStock(productId, cartQuantity + addQuantity);
     }
 
     private int getProductQuantity(Cart cart, Long productId) {
@@ -107,6 +123,46 @@ public class DefaultCartService implements CartService {
             return currentItem.getQuantity();
         } else {
             return 0;
+        }
+    }
+
+    private void recalculateCart(Cart cart) {
+        recalculateQuantity(cart);
+        recalculateCost(cart);
+        cart.getItems().stream()
+                .findAny()
+                .ifPresent(cartItem -> cart.setCurrency(cartItem.getProduct().getCurrency()));
+    }
+
+    private void recalculateQuantity(Cart cart) {
+        int totalQuantity = cart.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+        cart.setTotalQuantity(totalQuantity);
+    }
+
+    private void recalculateCost(Cart cart) {
+        BigDecimal totalCost = BigDecimal.ZERO;
+        for (CartItem cartItem : cart.getItems()) {
+            BigDecimal currentPrice = cartItem.getProduct().getPrice();
+            int currentQuantity = cartItem.getQuantity();
+            totalCost = addFunction(
+                    totalCost, currentPrice.multiply(BigDecimal.valueOf(currentQuantity))
+            );
+        }
+
+        cart.setTotalCost(totalCost);
+    }
+
+    private BigDecimal addFunction(BigDecimal number1, BigDecimal number2) {
+        if (number1 == null && number2 == null) {
+            return BigDecimal.ZERO;
+        } else if (number1 == null) {
+            return number2;
+        } else if (number2 == null) {
+            return number1;
+        } else {
+            return number1.add(number2);
         }
     }
 }

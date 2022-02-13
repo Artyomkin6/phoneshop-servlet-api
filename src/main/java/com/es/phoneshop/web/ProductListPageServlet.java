@@ -27,7 +27,6 @@ public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
     private RecentProductsService recentProductsService;
 
-
     @Override
     public void init() throws ServletException {
         super.init();
