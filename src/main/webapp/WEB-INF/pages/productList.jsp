@@ -22,10 +22,16 @@
           <tags:sortLink sortField="description" sortOrder="ascending"/>
           <tags:sortLink sortField="description" sortOrder="descending"/>
         </td>
+        <td class="quantity">
+          Quantity
+        </td>
         <td class="price">
           Price
           <tags:sortLink sortField="price" sortOrder="ascending"/>
           <tags:sortLink sortField="price" sortOrder="descending"/>
+        </td>
+        <td>
+          Add to cart
         </td>
       </tr>
     </thead>
@@ -39,11 +45,32 @@
             ${product.description}
           </a>
         </td>
-        <td class="price">
-          <tags:popupWindow productId="${product.id}">
-            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-          </tags:popupWindow>
-        </td>
+        <form method="post">
+          <td class="quantity">
+            <input name="quantity" value="${not empty param.error and product.id eq param.errorProductId ? param.errorQuantity : 1}" class="quantity"/>
+            <input type="hidden" name="productId" value="${product.id}">
+            <c:if test="${not empty param.error and product.id eq param.errorProductId}">
+              <div class="error">
+                ${param.error}
+              </div>
+            </c:if>
+            <c:if test="${not empty param.message and product.id eq param.addedProductId}">
+              <div class="success">
+                ${param.message}
+              </div>
+            </c:if>
+          </td>
+          <td class="price">
+            <tags:popupWindow productId="${product.id}">
+              <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+            </tags:popupWindow>
+          </td>
+          <td>
+            <button>
+              Add to cart
+            </button>
+          </td>
+        </form>
       </tr>
     </c:forEach>
   </table>

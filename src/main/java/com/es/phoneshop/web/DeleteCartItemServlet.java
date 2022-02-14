@@ -34,7 +34,7 @@ public class DeleteCartItemServlet extends HttpServlet {
     }
 
     private void deleteProductFromCart(HttpServletRequest request, Long productId) {
-        Cart cart = cartService.getCart(request);
+        Cart cart = cartService.getCart(request.getSession());
         cartService.delete(cart, productId);
     }
 }

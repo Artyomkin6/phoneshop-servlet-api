@@ -1,7 +1,9 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.utils.ProductUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +13,7 @@ import java.io.IOException;
 
 public class ProductPriceHistoryPageServlet extends HttpServlet {
     private static final String PRODUCT_ATTRIBUTE = "product";
+    private static final String HISTORIES_ATTRIBUTE = "histories";
     private static final String PRODUCT_PRICE_HISTORY_PAGE_PATH
             = "/WEB-INF/pages/productPriceHistory.jsp";
 
@@ -25,7 +28,9 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         long id = Long.parseLong(request.getPathInfo().substring(1));
-        request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getProduct(id));
+        Product product = productDao.getProduct(id);
+        request.setAttribute(PRODUCT_ATTRIBUTE, product);
+        request.setAttribute(HISTORIES_ATTRIBUTE, ProductUtil.getSortedHistories(product));
         request.getRequestDispatcher(PRODUCT_PRICE_HISTORY_PAGE_PATH).forward(request, response);
     }
 }

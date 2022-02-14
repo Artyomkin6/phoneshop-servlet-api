@@ -12,11 +12,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Objects;
+import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +43,7 @@ public class DefaultCartServiceTest {
         cart = new Cart();
         product = new Product();
         product.setId(PRODUCT_ID);
+        product.setPrice(BigDecimal.ZERO);
         productDao.deleteAll();
         productDao.save(product);
         when(request.getSession()).thenReturn(session);
@@ -50,30 +53,29 @@ public class DefaultCartServiceTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
-    public void testWhenSessionCartIsNullThenNewCartWillBeCreated() {
+    public void testGetCartWhenSessionCartIsNullThenNewCartWillBeCreated() {
         when(session.getAttribute(anyString())).thenReturn(null);
 
-        Cart currentCart = cartService.getCart(request);
+        Cart currentCart = cartService.getCart(session);
 
         assertNotNull(currentCart);
     }
 
     @Test
-    public void testWhenSessionCartIsNotNullThenCartWillBeReturned() {
+    public void testGetCartWhenSessionCartIsNotNullThenCartWillBeReturned() {
         when(session.getAttribute(anyString())).thenReturn(cart);
 
-        Cart currentCart = cartService.getCart(request);
+        Cart currentCart = cartService.getCart(session);
 
         assertSame(cart, currentCart);
     }
 
     @Test
-    public void testWhenQuantityIsAppropriateThenNormalBehavior()
+    public void testAddWhenQuantityIsAppropriateThenNormalBehavior()
             throws WrongQuantityException, NotEnoughStockException {
         product.setStock(20);
         int quantity = 10;
 
-        System.out.println(Objects.isNull(cart));
         cartService.add(cart, PRODUCT_ID, quantity);
 
         CartItem addedCartItem = cart.getItems().stream()
@@ -86,7 +88,7 @@ public class DefaultCartServiceTest {
     }
 
     @Test
-    public void testWhenProductExistsThenQuantityAdded()
+    public void testAddWhenProductExistsThenQuantityAdded()
             throws WrongQuantityException, NotEnoughStockException {
         int quantity = 5;
         product.setStock(20);
@@ -104,35 +106,110 @@ public class DefaultCartServiceTest {
     }
 
     @Test
-    public void testWhenQuantityIsNegativeThenExpectException()
+    public void testAddWhenQuantityIsNegativeThenExpectException()
             throws WrongQuantityException, NotEnoughStockException {
         int wrongQuantity = -1;
         product.setStock(20);
         exceptionRule.expect(WrongQuantityException.class);
 
         cartService.add(cart, PRODUCT_ID, wrongQuantity);
-
     }
 
     @Test
-    public void testWhenQuantityIsZeroThenExpectException()
+    public void testAddWhenQuantityIsZeroThenExpectException()
             throws WrongQuantityException, NotEnoughStockException {
         int wrongQuantity = 0;
         product.setStock(20);
         exceptionRule.expect(WrongQuantityException.class);
 
         cartService.add(cart, PRODUCT_ID, wrongQuantity);
-
     }
 
     @Test
-    public void testWhenNotEnoughStockThenExpectException()
+    public void testAddWhenNotEnoughStockThenExpectException()
             throws WrongQuantityException, NotEnoughStockException {
         product.setStock(10);
         int quantity = 20;
         exceptionRule.expect(NotEnoughStockException.class);
 
         cartService.add(cart, PRODUCT_ID, quantity);
+    }
 
+    @Test
+    public void testUpdateWhenQuantityIsAppropriateThenNormalBehavior()
+            throws WrongQuantityException, NotEnoughStockException {
+        product.setStock(20);
+        int quantity = 10;
+        cart.getItems().add(new CartItem(product, quantity));
+        int newQuantity = 20;
+
+        cartService.update(cart, PRODUCT_ID, newQuantity);
+
+        CartItem currentCartItem = cart.getItems().stream()
+                .findAny()
+                .orElse(null);
+        assertNotNull(currentCartItem);
+        Product currentProduct = currentCartItem.getProduct();
+        assertSame(product, currentProduct);
+        assertEquals(newQuantity, currentCartItem.getQuantity());
+    }
+
+    @Test
+    public void testUpdateWhenQuantityIsNegativeThenExpectException()
+            throws WrongQuantityException, NotEnoughStockException {
+        int cartQuantity = 1;
+        int wrongQuantity = -1;
+        product.setStock(20);
+        cart.getItems().add(new CartItem(product, cartQuantity));
+        exceptionRule.expect(WrongQuantityException.class);
+
+        cartService.update(cart, PRODUCT_ID, wrongQuantity);
+    }
+
+    @Test
+    public void testUpdateWhenQuantityIsZeroThenExpectException()
+            throws WrongQuantityException, NotEnoughStockException {
+        int cartQuantity = 1;
+        int wrongQuantity = 0;
+        product.setStock(20);
+        cart.getItems().add(new CartItem(product, cartQuantity));
+        exceptionRule.expect(WrongQuantityException.class);
+
+        cartService.update(cart, PRODUCT_ID, wrongQuantity);
+    }
+
+    @Test
+    public void testUpdateWhenNotEnoughStockThenExpectException()
+            throws WrongQuantityException, NotEnoughStockException {
+        int cartQuantity = 1;
+        product.setStock(20);
+        int bigQuantity = 50;
+        cart.getItems().add(new CartItem(product, cartQuantity));
+        exceptionRule.expect(NotEnoughStockException.class);
+
+        cartService.update(cart, PRODUCT_ID, bigQuantity);
+    }
+
+    @Test
+    public void testDeleteWhenProductExistsThenItShouldBeDeleted() {
+        int cartQuantity = 1;
+        cart.getItems().add(new CartItem(product, cartQuantity));
+
+        cartService.delete(cart, PRODUCT_ID);
+
+        assertTrue(cart.getItems().isEmpty());
+    }
+
+    @Test
+    public void testDeleteWhenProductDoesNotExistThenNothingShouldBeDone() {
+        int cartQuantity = 1;
+        cart.getItems().add(new CartItem(product, cartQuantity));
+        Long nonExistingId = Long.MAX_VALUE;
+        int sizeBeforeDeleting = cart.getItems().size();
+
+        cartService.delete(cart, nonExistingId);
+
+        assertFalse(cart.getItems().isEmpty());
+        assertEquals(sizeBeforeDeleting, cart.getItems().size());
     }
 }

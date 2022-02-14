@@ -20,7 +20,7 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     public static synchronized ArrayListProductDao getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new ArrayListProductDao();
         }
         return instance;
@@ -49,7 +49,7 @@ public class ArrayListProductDao implements ProductDao {
         LOCK.readLock().lock();
         try {
             return products.stream()
-                    .filter(product -> !(product.getPrice().equals(BigDecimal.ZERO)))
+                    .filter(product -> !(BigDecimal.ZERO.equals(product.getPrice())))
                     .filter(product -> product.getStock() > 0)
                     .filter(new ProductSearchPredicate(query))
                     .sorted(new ProductSearchComparator(query))

@@ -4,9 +4,8 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultCartService implements CartService {
@@ -23,19 +22,19 @@ public class DefaultCartService implements CartService {
     }
 
     public static CartService getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new DefaultCartService();
         }
         return instance;
     }
 
     @Override
-    public Cart getCart(HttpServletRequest request) {
-        synchronized (request.getSession()) {
-            cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
-            if (Objects.isNull(cart)) {
+    public Cart getCart(HttpSession session) {
+        synchronized (session) {
+            cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
+            if (cart == null) {
                 cart = new Cart();
-                request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart);
+                session.setAttribute(CART_SESSION_ATTRIBUTE, cart);
             }
             return cart;
         }
@@ -49,10 +48,10 @@ public class DefaultCartService implements CartService {
         LOCK.lock();
         try {
             CartItem currentItem = cart.getItems().stream()
-                    .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
+                    .filter(cartItem -> isProductInCartItemById(cartItem, productId))
                     .findAny()
                     .orElse(null);
-            if (Objects.isNull(currentItem)) {
+            if (currentItem == null) {
                 Product currentProduct = productDao.getProduct(productId);
                 currentItem = new CartItem(currentProduct, quantity);
                 cart.getItems().add(currentItem);
@@ -73,7 +72,7 @@ public class DefaultCartService implements CartService {
         LOCK.lock();
         try {
             cart.getItems().stream()
-                    .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
+                    .filter(cartItem -> isProductInCartItemById(cartItem, productId))
                     .forEach(cartItem -> cartItem.setQuantity(quantity));
             recalculateCart(cart);
         } finally {
@@ -86,7 +85,7 @@ public class DefaultCartService implements CartService {
         LOCK.lock();
         try {
             cart.getItems().removeIf(
-                    cartItem -> productId.equals(cartItem.getProduct().getId())
+                    cartItem -> isProductInCartItemById(cartItem, productId)
             );
             recalculateCart(cart);
         } finally {
@@ -119,7 +118,7 @@ public class DefaultCartService implements CartService {
                 .filter(cartItem -> productId.equals(cartItem.getProduct().getId()))
                 .findAny()
                 .orElse(null);
-        if (!Objects.isNull(currentItem)) {
+        if (currentItem != null) {
             return currentItem.getQuantity();
         } else {
             return 0;
@@ -146,7 +145,7 @@ public class DefaultCartService implements CartService {
         for (CartItem cartItem : cart.getItems()) {
             BigDecimal currentPrice = cartItem.getProduct().getPrice();
             int currentQuantity = cartItem.getQuantity();
-            totalCost = addFunction(
+            totalCost = sumNumbers(
                     totalCost, currentPrice.multiply(BigDecimal.valueOf(currentQuantity))
             );
         }
@@ -154,7 +153,7 @@ public class DefaultCartService implements CartService {
         cart.setTotalCost(totalCost);
     }
 
-    private BigDecimal addFunction(BigDecimal number1, BigDecimal number2) {
+    private BigDecimal sumNumbers(BigDecimal number1, BigDecimal number2) {
         if (number1 == null && number2 == null) {
             return BigDecimal.ZERO;
         } else if (number1 == null) {
@@ -164,5 +163,13 @@ public class DefaultCartService implements CartService {
         } else {
             return number1.add(number2);
         }
+    }
+
+    private boolean isProductInCartItemById(CartItem item, Long productId) {
+        Product cartProduct = item.getProduct();
+        if (cartProduct != null) {
+            return productId.equals(cartProduct.getId());
+        }
+        return false;
     }
 }

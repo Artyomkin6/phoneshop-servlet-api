@@ -1,37 +1,31 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
-import com.es.phoneshop.model.recent_products.DefaultRecentProductsService;
-import com.es.phoneshop.model.recent_products.RecentProductsService;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Queue;
 
-public class ProductListPageServlet extends HttpServlet {
+public class ProductListPageServlet extends AbstractProductServlet {
     private static final String PRODUCT_LIST_ATTRIBUTE = "products";
-    private static final String RECENT_PRODUCTS_ATTRIBUTE = "recentProducts";
     private static final String QUERY_PARAMETER = "query";
     private static final String SORT_FIELD_PARAMETER = "sortField";
     private static final String SORT_ORDER_PARAMETER = "sortOrder";
+    private static final String PRODUCT_ID_PARAMETER = "productId";
     private static final String PRODUCT_LIST_PAGE_PATH
             = "/WEB-INF/pages/productList.jsp";
-
-    private ProductDao productDao;
-    private RecentProductsService recentProductsService;
+    private static final String REDIRECT_PATH_FORMAT
+            = "%s/products?addedProductId=%d&message=Added to cart successfully";
+    private static final String ERROR_PATH_FORMAT
+            = "%s/products?errorProductId=%d&errorQuantity=%s&error=%s";
 
     @Override
     public void init() throws ServletException {
         super.init();
-        productDao = ArrayListProductDao.getInstance();
-        recentProductsService = DefaultRecentProductsService.getInstance();
     }
 
     @Override
@@ -46,5 +40,22 @@ public class ProductListPageServlet extends HttpServlet {
         request.setAttribute(RECENT_PRODUCTS_ATTRIBUTE, recentProducts);
 
         request.getRequestDispatcher(PRODUCT_LIST_PAGE_PATH).forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Long productId = Long.valueOf(request.getParameter(PRODUCT_ID_PARAMETER));
+        addProductToCart(request, response, productId);
+    }
+
+    @Override
+    protected String getRedirectPath(HttpServletRequest request, Long productId) {
+        return String.format(REDIRECT_PATH_FORMAT, request.getContextPath(), productId);
+    }
+
+    @Override
+    protected String getErrorPathFormat(HttpServletRequest request, Long productId,
+                                        String quantityString, String errorMessage) {
+        return String.format(ERROR_PATH_FORMAT, request.getContextPath(), productId, quantityString, errorMessage);
     }
 }

@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
+<jsp:useBean id="histories" type="java.util.List" scope="request"/>
 <tags:master pageTitle="Price History">
   <h1>
     Price History
@@ -18,7 +19,7 @@
         <td>Price</td>
       </tr>
     </thead>
-    <c:forEach var="history" items="${product.histories}">
+    <c:forEach var="history" items="${histories}">
       <tr>
         <td>
           ${history.getStringDate()}
