@@ -19,7 +19,7 @@ public class ProductNotFoundHandlerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ProductNotFoundException exception
                 = (ProductNotFoundException) request.getAttribute(EXCEPTION_ATTRIBUTE);
-        request.setAttribute(ID_ATTRIBUTE, exception.getProductId());
+        request.setAttribute(ID_ATTRIBUTE, exception.getId());
         request.getRequestDispatcher(PRODUCT_NOT_FOUND_PAGE_PATH).forward(request, response);
     }
 }

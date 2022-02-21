@@ -1,28 +1,21 @@
 package com.es.phoneshop.model.product;
 
-public class ProductNotFoundException extends RuntimeException {
-    private final Long productId;
+import com.es.phoneshop.model.abstract_dao.ItemNotFoundException;
 
+public class ProductNotFoundException extends ItemNotFoundException {
     public ProductNotFoundException(Long productId) {
-        this.productId = productId;
+        super(productId);
     }
 
     public ProductNotFoundException(Long productId, String message) {
-        super(message);
-        this.productId = productId;
+        super(productId, message);
     }
 
     public ProductNotFoundException(Long productId, String message, Throwable cause) {
-        super(message, cause);
-        this.productId = productId;
+        super(productId, message, cause);
     }
 
     public ProductNotFoundException(Long productId, Throwable cause) {
-        super(cause);
-        this.productId = productId;
-    }
-
-    public Long getProductId() {
-        return productId;
+        super(productId, cause);
     }
 }

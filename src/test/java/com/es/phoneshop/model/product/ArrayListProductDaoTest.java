@@ -93,14 +93,14 @@ public class ArrayListProductDaoTest {
     public void testGetProductWithExistingId() {
         long existingId = 1L;
         productDao.save(defaultProduct);
-        assertNotNull(productDao.getProduct(existingId));
+        assertNotNull(productDao.getById(existingId));
     }
 
     @Test
     public void testGetProductWithNonExistingId() {
         long nonExistingId = -1L;
         exceptionRule.expect(ProductNotFoundException.class);
-        productDao.getProduct(nonExistingId);
+        productDao.getById(nonExistingId);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ArrayListProductDaoTest {
         long existingId = 1L;
         defaultProduct.setId(existingId);
         productDao.save(defaultProduct);
-        assertNotSame(defaultProduct, productDao.getProduct(existingId));
+        assertNotSame(defaultProduct, productDao.getById(existingId));
         assertEquals((long) defaultProduct.getId(), existingId);
     }
 
@@ -118,7 +118,7 @@ public class ArrayListProductDaoTest {
         long existingId = 1L;
         defaultProduct.setId(existingId);
         productDao.save(defaultProduct);
-        assertSame(defaultProduct, productDao.getProduct(existingId));
+        assertSame(defaultProduct, productDao.getById(existingId));
         assertEquals((long) defaultProduct.getId(), existingId);
     }
 
@@ -126,18 +126,18 @@ public class ArrayListProductDaoTest {
     public void testSaveProductWithoutId() {
         productDao.save(defaultProduct);
         long id = defaultProduct.getId();
-        assertSame(defaultProduct, productDao.getProduct(id));
+        assertSame(defaultProduct, productDao.getById(id));
     }
 
     @Test
     public void testDeleteProductWithExistingId() {
         productDao.save(defaultProduct);
         long id = defaultProduct.getId();
-        assertNotNull(productDao.getProduct(id));
+        assertNotNull(productDao.getById(id));
         productDao.delete(id);
         assertTrue(productDao.findProducts().isEmpty());
         exceptionRule.expect(ProductNotFoundException.class);
-        assertNull(productDao.getProduct(id));
+        assertNull(productDao.getById(id));
     }
 
     @Test
@@ -145,10 +145,10 @@ public class ArrayListProductDaoTest {
         productDao.save(defaultProduct);
         long id = defaultProduct.getId();
         long fakeId = -1L;
-        assertNotNull(productDao.getProduct(id));
+        assertNotNull(productDao.getById(id));
         int sizeBeforeDeleting = productDao.findProducts().size();
         productDao.delete(fakeId);
-        assertNotNull(productDao.getProduct(id));
+        assertNotNull(productDao.getById(id));
         int sizeAfterDeleting = productDao.findProducts().size();
         assertEquals(sizeBeforeDeleting, sizeAfterDeleting);
     }
