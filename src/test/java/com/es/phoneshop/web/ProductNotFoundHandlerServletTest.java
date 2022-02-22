@@ -1,5 +1,6 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.product.ProductNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,12 +28,13 @@ public class ProductNotFoundHandlerServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
 
-    private ProductListPageServlet servlet = new ProductListPageServlet();
+    private ProductNotFoundHandlerServlet servlet = new ProductNotFoundHandlerServlet();
 
     @Before
     public void setup() throws ServletException {
         servlet.init();
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        when(request.getAttribute(anyString())).thenReturn(new ProductNotFoundException(1L));
     }
 
     @Test

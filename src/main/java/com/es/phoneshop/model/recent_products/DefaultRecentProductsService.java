@@ -4,7 +4,6 @@ import com.es.phoneshop.model.product.Product;
 
 import javax.servlet.http.HttpSession;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,7 +19,7 @@ public class DefaultRecentProductsService implements RecentProductsService {
     }
 
     public static synchronized RecentProductsService getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new DefaultRecentProductsService();
         }
         return instance;
@@ -31,7 +30,7 @@ public class DefaultRecentProductsService implements RecentProductsService {
         synchronized (session) {
             Queue<Product> recentProducts
                     = (LinkedList<Product>) session.getAttribute(RECENT_PRODUCTS_SESSION_ATTRIBUTE);
-            if (Objects.isNull(recentProducts)) {
+            if (recentProducts == null) {
                 recentProducts = new LinkedList<>();
                 session.setAttribute(RECENT_PRODUCTS_SESSION_ATTRIBUTE, recentProducts);
             }

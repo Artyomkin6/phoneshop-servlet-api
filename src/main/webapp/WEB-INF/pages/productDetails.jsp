@@ -7,17 +7,14 @@
 <jsp:useBean id="recentProducts" type="java.util.Queue" scope="request"/>
 <tags:master pageTitle="Product Details">
   <p>
-    Cart: ${cart}
-  </p>
-  <p>
     ${product.description}
   </p>
-  <c:if test="${not empty error}">
+  <c:if test="${not empty param.error}">
     <div class="error">
-      ${error}
+      ${param.error}
     </div>
   </c:if>
-  <c:if test="${not empty param.message and empty error}">
+  <c:if test="${not empty param.message and empty param.error}">
     <div class="success">
       ${param.message}
     </div>
@@ -53,13 +50,13 @@
         <tr>
           <td>Quantity</td>
           <td>
-            <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity"/>
-            <c:if test="${not empty error}">
+            <input name="quantity" value="${not empty param.error ? param.errorQuantity : 1}" class="quantity"/>
+            <c:if test="${not empty param.error}">
               <div class="error">
-                ${error}
+                ${param.error}
               </div>
             </c:if>
-            <c:if test="${not empty param.message and empty error}">
+            <c:if test="${not empty param.message and empty param.error}">
               <div class="success">
                 ${param.message}
               </div>

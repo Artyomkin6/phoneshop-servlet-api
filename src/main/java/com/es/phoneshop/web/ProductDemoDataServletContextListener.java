@@ -29,6 +29,5 @@ public class ProductDemoDataServletContextListener implements ServletContextList
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-
     }
 }

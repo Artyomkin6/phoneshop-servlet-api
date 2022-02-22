@@ -3,13 +3,12 @@ package com.es.phoneshop.model.product;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Objects;
 
 public class ProductSearchComparator implements Comparator<Product> {
     private String query;
 
     public ProductSearchComparator(String query) {
-        if (!Objects.isNull(query)) {
+        if (query != null) {
             this.query = query.trim().toLowerCase(Locale.ROOT);
         } else {
             this.query = null;
@@ -26,7 +25,7 @@ public class ProductSearchComparator implements Comparator<Product> {
 
     @Override
     public int compare(Product product1, Product product2) {
-        if (Objects.isNull(query) || query.isEmpty()) {
+        if ((query == null) || query.isEmpty()) {
             return 0;
         }
         long matches1 = countMatches(product1);

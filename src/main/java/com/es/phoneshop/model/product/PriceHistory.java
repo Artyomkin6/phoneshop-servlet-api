@@ -1,10 +1,11 @@
 package com.es.phoneshop.model.product;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class PriceHistory {
+public class PriceHistory implements Serializable {
     private static final SimpleDateFormat DATE_FORMATTER
             = new SimpleDateFormat("d MMM yyyy");
 

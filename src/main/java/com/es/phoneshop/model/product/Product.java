@@ -1,13 +1,12 @@
 package com.es.phoneshop.model.product;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class Product {
+public class Product implements Serializable {
     private Long id;
     private String code;
     private String description;
@@ -98,9 +97,7 @@ public class Product {
     }
 
     public List<PriceHistory> getHistories() {
-        return histories.stream()
-                .sorted(Comparator.comparing(PriceHistory::getStartDate).reversed())
-                .collect(Collectors.toList());
+        return histories;
     }
 
     public void setHistories(List<PriceHistory> histories) {
