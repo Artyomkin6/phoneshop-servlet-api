@@ -26,7 +26,7 @@ public class CartPageServlet extends HttpServlet {
     private static final String QUANTITIES = "quantity";
     private static final String CART_LIST_PAGE_PATH
             = "/WEB-INF/pages/cart.jsp";
-    private static final String ERRORS_SESSION_ATTRIBUTE = "errors";
+    private static final String ERRORS_SESSION_ATTRIBUTE = "cartErrors";
     private static final String QUANTITIES_SESSION_ATTRIBUTE = "errorQuantities";
     private static final String SUCCESS_PATH_FORMAT = "%s/cart?message=%s";
     private static final String SUCCESS_MESSAGE = "Cart has been updated successfully";
@@ -76,13 +76,13 @@ public class CartPageServlet extends HttpServlet {
         setSessionMap(request.getSession(), errors, ERRORS_SESSION_ATTRIBUTE);
         setSessionMap(request.getSession(), quantitiesString, QUANTITIES_SESSION_ATTRIBUTE);
 
-        if (!errors.isEmpty()) {
+        if (errors.isEmpty()) {
             response.sendRedirect(
-                    String.format(ERROR_PATH_FORMAT, request.getContextPath())
+                    String.format(SUCCESS_PATH_FORMAT, request.getContextPath(), SUCCESS_MESSAGE)
             );
         } else {
             response.sendRedirect(
-                    String.format(SUCCESS_PATH_FORMAT, request.getContextPath(), SUCCESS_MESSAGE)
+                    String.format(ERROR_PATH_FORMAT, request.getContextPath())
             );
         }
     }

@@ -1,12 +1,14 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.abstract_dao.ItemWithId;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
-public class Product implements Serializable {
+public class Product implements Serializable, ItemWithId {
     private Long id;
     private String code;
     private String description;
@@ -38,14 +40,6 @@ public class Product implements Serializable {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getCode() {
@@ -102,6 +96,16 @@ public class Product implements Serializable {
 
     public void setHistories(List<PriceHistory> histories) {
         this.histories = histories;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

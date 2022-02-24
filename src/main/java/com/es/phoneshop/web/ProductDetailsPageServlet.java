@@ -27,10 +27,10 @@ public class ProductDetailsPageServlet extends AbstractProductServlet {
         Long productId = parseProductId(request);
 
         Queue<Product> recentProducts = recentProductsService.getRecentProducts(request.getSession());
-        recentProductsService.addRecentProduct(recentProducts, productDao.getProduct(productId));
+        recentProductsService.addRecentProduct(recentProducts, productDao.getById(productId));
         request.setAttribute(RECENT_PRODUCTS_ATTRIBUTE, recentProducts);
 
-        request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getProduct(productId));
+        request.setAttribute(PRODUCT_ATTRIBUTE, productDao.getById(productId));
 
         request.getRequestDispatcher(PRODUCT_DETAILS_PAGE_PATH).forward(request, response);
     }

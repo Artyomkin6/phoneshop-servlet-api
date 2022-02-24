@@ -21,7 +21,7 @@ public class DefaultCartService implements CartService {
         productDao = ArrayListProductDao.getInstance();
     }
 
-    public static CartService getInstance() {
+    public static synchronized CartService getInstance() {
         if (instance == null) {
             instance = new DefaultCartService();
         }
@@ -41,6 +41,13 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
+    public void clearCart(HttpSession session) {
+        synchronized (session) {
+            session.setAttribute(CART_SESSION_ATTRIBUTE, new Cart());
+        }
+    }
+
+    @Override
     public void add(Cart cart, Long productId, int quantity) throws NotEnoughStockException, WrongQuantityException {
         validateQuantity(quantity);
         checkAddStock(cart, productId, quantity);
@@ -52,7 +59,7 @@ public class DefaultCartService implements CartService {
                     .findAny()
                     .orElse(null);
             if (currentItem == null) {
-                Product currentProduct = productDao.getProduct(productId);
+                Product currentProduct = productDao.getById(productId);
                 currentItem = new CartItem(currentProduct, quantity);
                 cart.getItems().add(currentItem);
             } else {
@@ -100,7 +107,7 @@ public class DefaultCartService implements CartService {
     }
 
     private void checkStock(Long productId, int quantity) throws NotEnoughStockException {
-        Product currentProduct = productDao.getProduct(productId);
+        Product currentProduct = productDao.getById(productId);
         boolean enoughStock =
                 (currentProduct.getStock() >= quantity);
         if (!enoughStock) {

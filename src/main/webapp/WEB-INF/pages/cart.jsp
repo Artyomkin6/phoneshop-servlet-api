@@ -12,12 +12,12 @@
   <p>
     Total cost: <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${cart.currency.symbol}"/>
   </p>
-  <c:if test="${not empty param.message and empty errors}">
+  <c:if test="${not empty param.message and empty cartErrors}">
     <div class="success">
       ${param.message}
     </div>
   </c:if>
-  <c:if test="${not empty errors}">
+  <c:if test="${not empty cartErrors}">
     <div class="error">
       There was errors during update
     </div>
@@ -54,7 +54,7 @@
             </td>
             <td class="quantity">
               <fmt:formatNumber value="${item.quantity}" var="quantity"/>
-              <c:set var="error" value="${errors[item.product.id]}"/>
+              <c:set var="error" value="${cartErrors[item.product.id]}"/>
               <c:set var="errorQuantity" value="${errorQuantities[item.product.id]}"/>
               <input name="quantity" class="quantity" value="${not empty error ? errorQuantity : quantity}"/>
               <input type="hidden" name="productId" value="${item.product.id}">
@@ -63,7 +63,7 @@
                   ${error}
                 </div>
               </c:if>
-              <c:if test="${not empty errors and empty error}">
+              <c:if test="${not empty cartErrors and empty error}">
                 <div class="success">
                   Item updated
                 </div>
@@ -89,6 +89,11 @@
         </button>
       </p>
     </c:if>
+  </form>
+  <form action="${pageContext.servletContext.contextPath}/checkout">
+    <button>
+      Checkout
+    </button>
   </form>
   <form id="deleteCartItem" method="post">
   </form>
