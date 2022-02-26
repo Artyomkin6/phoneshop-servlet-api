@@ -81,7 +81,7 @@
       <tags:orderOverviewRow name="firstName" label="First name" order="${order}"/>
       <tags:orderOverviewRow name="lastName" label="Last name" order="${order}"/>
       <tags:orderOverviewRow name="phone" label="Phone" order="${order}"/>
-      <tags:orderOverviewRow name="deliveryDate" label="Delivery date" order="${order}"/>
+      <tags:orderOverviewRow name="deliveryDate" label="Delivery date (in the dd.mm.yyyy format)" order="${order}"/>
       <tags:orderOverviewRow name="deliveryAddress" label="Address" order="${order}"/>
       <tr>
         <td>Payment method</td>

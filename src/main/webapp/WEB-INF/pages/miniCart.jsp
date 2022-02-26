@@ -5,3 +5,7 @@
 
 <jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
 ${cart.totalQuantity} items
+<c:if test="${not empty cart.items}">
+	, total cost:
+	<fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${cart.currency.symbol}"/>
+</c:if>

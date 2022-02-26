@@ -95,7 +95,7 @@
         <tags:orderFormRow name="firstName" label="First name" errors="${checkoutErrors}" oldValues="${oldValues}"/>
         <tags:orderFormRow name="lastName" label="Last name" errors="${checkoutErrors}" oldValues="${oldValues}"/>
         <tags:orderFormRow name="phone" label="Phone" errors="${checkoutErrors}" oldValues="${oldValues}"/>
-        <tags:orderFormRow name="deliveryDate" label="Delivery date" errors="${checkoutErrors}" oldValues="${oldValues}"/>
+        <tags:orderFormRow name="deliveryDate" label="Delivery date (in the dd.mm.yyyy format)" errors="${checkoutErrors}" oldValues="${oldValues}"/>
         <tags:orderFormRow name="address" label="Address" errors="${checkoutErrors}" oldValues="${oldValues}"/>
         <tr>
           <td>Payment method<span style="color:red">*</span></td>

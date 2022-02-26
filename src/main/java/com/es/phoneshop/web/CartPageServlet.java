@@ -4,6 +4,8 @@ import com.es.phoneshop.model.cart.CartService;
 import com.es.phoneshop.model.cart.DefaultCartService;
 import com.es.phoneshop.model.cart.NotEnoughStockException;
 import com.es.phoneshop.model.cart.WrongQuantityException;
+import com.es.phoneshop.web.helpers.InputHelper;
+import com.es.phoneshop.web.helpers.QuantityInputHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.es.phoneshop.web.AbstractProductServlet.ERROR_NOT_A_NUMBER;
-import static com.es.phoneshop.web.AbstractProductServlet.ERROR_WRONG_QUANTITY;
 import static com.es.phoneshop.web.AbstractProductServlet.ERROR_NOT_ENOUGH_STOCK;
+import static com.es.phoneshop.web.AbstractProductServlet.ERROR_WRONG_QUANTITY;
 
 public class CartPageServlet extends HttpServlet {
     private static final String CART_ATTRIBUTE = "cart";
@@ -31,6 +33,7 @@ public class CartPageServlet extends HttpServlet {
     private static final String SUCCESS_PATH_FORMAT = "%s/cart?message=%s";
     private static final String SUCCESS_MESSAGE = "Cart has been updated successfully";
     private static final String ERROR_PATH_FORMAT = "%s/cart";
+    private static final InputHelper INPUT_HELPER = new QuantityInputHelper();
 
     private CartService cartService;
 
@@ -62,8 +65,12 @@ public class CartPageServlet extends HttpServlet {
 
             int quantity;
             try {
-                quantity = parseQuantity(quantities[i], request);
-                cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+                if (INPUT_HELPER.CheckInput(quantities[i])) {
+                    quantity = parseQuantity(quantities[i], request);
+                    cartService.update(cartService.getCart(request.getSession()), productId, quantity);
+                } else {
+                    handleError(errors, quantitiesString, productId, ERROR_NOT_A_NUMBER, quantities[i]);
+                }
             } catch (ParseException exception) {
                 handleError(errors, quantitiesString, productId, ERROR_NOT_A_NUMBER, quantities[i]);
             } catch (WrongQuantityException exception) {

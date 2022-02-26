@@ -1,6 +1,5 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.order.ArrayListOrderDao;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.model.order.OrderDao;
@@ -14,7 +13,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,13 +26,9 @@ public class OrderOverviewPageServletTest {
     @Mock
     private HttpServletRequest request;
     @Mock
-    private HttpSession session;
-    @Mock
     private HttpServletResponse response;
     @Mock
     private RequestDispatcher requestDispatcher;
-    @Mock
-    private Cart cart;
 
     private static final String SECURE_ORDER_ID = "admin";
     private static final String ORDER_ATTRIBUTE = "order";

@@ -7,8 +7,9 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class Product implements Serializable, ItemWithId {
+public class Product implements Cloneable, Serializable, ItemWithId {
     private Long id;
     private String code;
     private String description;
@@ -106,6 +107,21 @@ public class Product implements Serializable, ItemWithId {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public Product clone() throws CloneNotSupportedException {
+        Product clonedProduct = (Product) super.clone();
+        clonedProduct.histories = histories.stream()
+                .map(history -> {
+                    try {
+                        return history.clone();
+                    } catch (CloneNotSupportedException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                })
+                .collect(Collectors.toList());
+        return clonedProduct;
     }
 
     @Override

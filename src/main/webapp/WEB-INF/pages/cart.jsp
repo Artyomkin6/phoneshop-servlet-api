@@ -7,11 +7,18 @@
 <tags:master pageTitle="Cart">
   <p/>
   <p>
-    Total quantity: ${cart.totalQuantity}
+    <div>
+      Total quantity: ${cart.totalQuantity}
+    </div>
+    <div>
+      Total cost: <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${cart.currency.symbol}"/>
+    </div>
   </p>
-  <p>
-    Total cost: <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${cart.currency.symbol}"/>
-  </p>
+  <c:if test="${empty cart.items}">
+    <p>
+      Your cart is empty
+    </p>
+  </c:if>
   <c:if test="${not empty param.message and empty cartErrors}">
     <div class="success">
       ${param.message}
@@ -88,13 +95,13 @@
           Update
         </button>
       </p>
-    </c:if>
-  </form>
-  <form action="${pageContext.servletContext.contextPath}/checkout">
-    <button>
-      Checkout
-    </button>
-  </form>
+    </form>
+    <form action="${pageContext.servletContext.contextPath}/checkout">
+      <button>
+        Checkout
+      </button>
+    </form>
+  </c:if>
   <form id="deleteCartItem" method="post">
   </form>
 </tags:master>

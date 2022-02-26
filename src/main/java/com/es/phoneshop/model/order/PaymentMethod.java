@@ -6,19 +6,19 @@ public enum PaymentMethod {
     CASH("cash"),
     CREDIT_CARD("creditCard");
 
-    private String fieldName;
+    private final String methodName;
 
-    PaymentMethod(String fieldName) {
-        this.fieldName = fieldName;
+    PaymentMethod(String methodName) {
+        this.methodName = methodName;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getMethodName() {
+        return methodName;
     }
 
     public static PaymentMethod fromName(String name) {
         return Arrays.stream(PaymentMethod.values())
-                .filter(sortField -> sortField.fieldName.equals(name))
+                .filter(sortField -> sortField.methodName.equals(name))
                 .findAny()
                 .orElse(null);
     }

@@ -7,6 +7,7 @@ import com.es.phoneshop.model.order.DefaultOrderService;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.model.order.OrderService;
 import com.es.phoneshop.model.order.PaymentMethod;
+import com.es.phoneshop.web.helpers.InputValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class CheckoutPageServlet extends HttpServlet {
     private static final String ORDER_ATTRIBUTE = "order";
@@ -39,9 +41,12 @@ public class CheckoutPageServlet extends HttpServlet {
     private static final String ERROR_PATH_FORMAT = "%s/checkout";
     private static final DateTimeFormatter formatter
             = DateTimeFormatter.ofPattern("dd.MM.uuuu");
+    private static final InputValidator validator = new InputValidator();
 
     private CartService cartService;
     private OrderService orderService;
+    private Map<String, String> errors;
+    private Map<String, String> oldValues;
 
     @Override
     public void init() throws ServletException {
@@ -65,14 +70,14 @@ public class CheckoutPageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cart cart = cartService.getCart(request.getSession());
         Order order = orderService.getOrder(cart);
-        Map<String, String> errors = new HashMap<>();
-        Map<String, String> oldValues = new HashMap<>();
+        errors = new HashMap<>();
+        oldValues = new HashMap<>();
 
-        setRequiredParameter(request, FIRST_NAME_PARAMETER, order::setFirstName, errors, oldValues);
-        setRequiredParameter(request, LAST_NAME_PARAMETER, order::setLastName, errors, oldValues);
-        setRequiredParameter(request, PHONE_PARAMETER, order::setPhone, errors, oldValues);
-        setRequiredParameter(request, ADDRESS_PARAMETER, order::setDeliveryAddress, errors, oldValues);
-        setOrderDeliveryDate(request, order, errors, oldValues);
+        setRequiredParameter(request, FIRST_NAME_PARAMETER, order::setFirstName, validator::validateName);
+        setRequiredParameter(request, LAST_NAME_PARAMETER, order::setLastName, validator::validateName);
+        setRequiredParameter(request, PHONE_PARAMETER, order::setPhone, validator::validatePhone);
+        setRequiredParameter(request, ADDRESS_PARAMETER, order::setDeliveryAddress, input -> true);
+        setOrderDeliveryDate(request, order, validator::validateDate);
         setPaymentMethod(request, order);
 
         setSessionMap(request.getSession(), errors, ERRORS_SESSION_ATTRIBUTE);
@@ -91,21 +96,21 @@ public class CheckoutPageServlet extends HttpServlet {
         }
     }
 
-    private void setRequiredParameter(HttpServletRequest request, String parameter, Consumer<String> consumer,
-                                      Map<String, String> errors, Map<String, String> oldValues) {
+    private void setRequiredParameter(HttpServletRequest request, String parameter, Consumer<String> orderSetter,
+                                      Function<String, Boolean> checkInput) {
         String value = request.getParameter(parameter);
         oldValues.put(parameter, value);
-        if (value == null || value.isEmpty()) {
+        boolean isValid = checkInput.apply(value);
+        if (value == null || value.isEmpty() || (!isValid)) {
             errors.put(parameter, ERROR_MESSAGE);
         } else {
-            consumer.accept(value);
+            orderSetter.accept(value);
         }
     }
 
-    private void setOrderDeliveryDate(HttpServletRequest request, Order order, Map<String, String> errors,
-                                      Map<String, String> oldValues) {
+    private void setOrderDeliveryDate(HttpServletRequest request, Order order, Function<String, Boolean> checkInput) {
         try {
-            LocalDate deliveryDate = parseDate(request, oldValues);
+            LocalDate deliveryDate = parseDate(request, oldValues, checkInput);
             order.setDeliveryDate(deliveryDate);
         } catch (DateTimeParseException exception) {
             errors.put(DELIVERY_DATE_PARAMETER, ERROR_WRONG_DATE);
@@ -117,8 +122,12 @@ public class CheckoutPageServlet extends HttpServlet {
         order.setPaymentMethod(PaymentMethod.fromName(paymentMethodString));
     }
 
-    private LocalDate parseDate(HttpServletRequest request, Map<String, String> oldValues) {
+    private LocalDate parseDate(HttpServletRequest request, Map<String, String> oldValues,
+                                Function<String, Boolean> checkInput) {
         String dateString = request.getParameter(DELIVERY_DATE_PARAMETER);
+        if (!checkInput.apply(dateString)) {
+            throw new DateTimeParseException(ERROR_WRONG_DATE, dateString, 0);
+        }
         oldValues.put(DELIVERY_DATE_PARAMETER, dateString);
         return LocalDate.parse(dateString, formatter);
     }
