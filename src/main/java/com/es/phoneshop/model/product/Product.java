@@ -112,15 +112,17 @@ public class Product implements Cloneable, Serializable, ItemWithId {
     @Override
     public Product clone() throws CloneNotSupportedException {
         Product clonedProduct = (Product) super.clone();
-        clonedProduct.histories = histories.stream()
-                .map(history -> {
-                    try {
-                        return history.clone();
-                    } catch (CloneNotSupportedException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                })
-                .collect(Collectors.toList());
+        if (histories != null) {
+            clonedProduct.histories = histories.stream()
+                    .map(history -> {
+                        try {
+                            return history.clone();
+                        } catch (CloneNotSupportedException exception) {
+                            throw new RuntimeException(exception);
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
         return clonedProduct;
     }
 
