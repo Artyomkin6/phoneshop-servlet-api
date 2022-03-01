@@ -40,7 +40,9 @@ public class PriceHistory implements Cloneable, Serializable {
     @Override
     public PriceHistory clone() throws CloneNotSupportedException {
         PriceHistory clonedHistory = (PriceHistory) super.clone();
-        clonedHistory.startDate = (Calendar) startDate.clone();
+        if (startDate != null) {
+            clonedHistory.startDate = (Calendar) startDate.clone();
+        }
         return clonedHistory;
     }
 }

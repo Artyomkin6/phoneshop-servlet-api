@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultCartServiceTest {
-    @Mock
-    private HttpServletRequest request;
     @Mock
     private HttpSession session;
     @Mock
@@ -46,7 +43,6 @@ public class DefaultCartServiceTest {
         product.setPrice(BigDecimal.ZERO);
         productDao.deleteAll();
         productDao.save(product);
-        when(request.getSession()).thenReturn(session);
     }
 
     @Rule

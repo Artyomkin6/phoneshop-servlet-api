@@ -43,7 +43,8 @@ public class CheckoutPageServletTest {
 
     private static final int DEFAULT_QUANTITY = 1;
     private static final BigDecimal DEFAULT_TOTAL_COST = new BigDecimal(10);
-    private static final String DEFAULT_STRING = "not empty";
+    private static final String DEFAULT_NAME = "Name";
+    private static final String DEFAULT_PHONE = "+123";
     private static final String DEFAULT_STRING_DATE = "22.02.2022";
     private static final String DEFAULT_STRING_PAYMENT_METHOD = "cash";
     private static final String ORDER_ATTRIBUTE = "order";
@@ -93,7 +94,7 @@ public class CheckoutPageServletTest {
 
     @Test
     public void testDoPostWhenThereAreErrorsThenRedirectToErrorPath() throws ServletException, IOException {
-        when(request.getParameter(DELIVERY_DATE_PARAMETER)).thenReturn("");
+        when(request.getParameter(anyString())).thenReturn("");
 
         servlet.doPost(request, response);
 
@@ -110,10 +111,10 @@ public class CheckoutPageServletTest {
     }
 
     private void setOrderInputInRequest(HttpServletRequest request) {
-        when(request.getParameter(FIRST_NAME_PARAMETER)).thenReturn(DEFAULT_STRING);
-        when(request.getParameter(LAST_NAME_PARAMETER)).thenReturn(DEFAULT_STRING);
-        when(request.getParameter(PHONE_PARAMETER)).thenReturn(DEFAULT_STRING);
-        when(request.getParameter(ADDRESS_PARAMETER)).thenReturn(DEFAULT_STRING);
+        when(request.getParameter(FIRST_NAME_PARAMETER)).thenReturn(DEFAULT_NAME);
+        when(request.getParameter(LAST_NAME_PARAMETER)).thenReturn(DEFAULT_NAME);
+        when(request.getParameter(PHONE_PARAMETER)).thenReturn(DEFAULT_PHONE);
+        when(request.getParameter(ADDRESS_PARAMETER)).thenReturn(DEFAULT_NAME);
         when(request.getParameter(DELIVERY_DATE_PARAMETER)).thenReturn(DEFAULT_STRING_DATE);
         when(request.getParameter(PAYMENT_METHOD_PARAMETER)).thenReturn(DEFAULT_STRING_PAYMENT_METHOD);
     }
