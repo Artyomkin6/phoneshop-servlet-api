@@ -6,19 +6,19 @@ public enum SortField {
     DESCRIPTION("description"),
     PRICE("price");
 
-    private String fieldName;
+    private String sortFieldName;
 
-    SortField(String fieldName) {
-        this.fieldName = fieldName;
+    SortField(String sortFieldName) {
+        this.sortFieldName = sortFieldName;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getSortFieldName() {
+        return sortFieldName;
     }
 
     public static SortField fromName(String name) {
         return Arrays.stream(SortField.values())
-                .filter(sortField -> sortField.fieldName.equals(name))
+                .filter(sortField -> sortField.sortFieldName.equals(name))
                 .findAny()
                 .orElse(null);
     }

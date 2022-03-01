@@ -8,6 +8,8 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.recent_products.DefaultRecentProductsService;
 import com.es.phoneshop.model.recent_products.RecentProductsService;
+import com.es.phoneshop.web.helpers.InputHelper;
+import com.es.phoneshop.web.helpers.QuantityInputHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +28,7 @@ public abstract class AbstractProductServlet extends HttpServlet {
     protected static final String ERROR_NOT_ENOUGH_STOCK = "Not enough stock";
     protected static final String ERROR_WRONG_QUANTITY
             = "Quantity must be a positive number";
+    private static final InputHelper INPUT_HELPER = new QuantityInputHelper();
 
     protected ProductDao productDao;
     protected CartService cartService;
@@ -60,6 +63,9 @@ public abstract class AbstractProductServlet extends HttpServlet {
 
     protected int parseQuantity(HttpServletRequest request) throws ParseException {
         String quantityString = getQuantityString(request);
+        if (!INPUT_HELPER.CheckInput(quantityString)) {
+            throw new ParseException(quantityString, 0);
+        }
         NumberFormat format = NumberFormat.getInstance(request.getLocale());
         return format.parse(quantityString).intValue();
     }

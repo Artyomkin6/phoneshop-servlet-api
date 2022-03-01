@@ -1,7 +1,6 @@
 package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.CartItem;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -28,7 +27,7 @@ public class DefaultOrderService implements OrderService {
         order.setItems(cart.getItems().stream()
                 .map(cartItem -> {
                     try {
-                        return (CartItem) cartItem.clone();
+                        return cartItem.clone();
                     } catch (CloneNotSupportedException exception) {
                         throw new RuntimeException(exception);
                     }

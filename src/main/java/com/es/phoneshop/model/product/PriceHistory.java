@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class PriceHistory implements Serializable {
+public class PriceHistory implements Cloneable, Serializable {
     private static final SimpleDateFormat DATE_FORMATTER
             = new SimpleDateFormat("d MMM yyyy");
 
@@ -35,5 +35,12 @@ public class PriceHistory implements Serializable {
 
     public String getStringDate() {
         return DATE_FORMATTER.format(startDate.getTime());
+    }
+
+    @Override
+    public PriceHistory clone() throws CloneNotSupportedException {
+        PriceHistory clonedHistory = (PriceHistory) super.clone();
+        clonedHistory.startDate = (Calendar) startDate.clone();
+        return clonedHistory;
     }
 }

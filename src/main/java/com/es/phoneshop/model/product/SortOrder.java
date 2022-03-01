@@ -6,19 +6,19 @@ public enum SortOrder {
     ASCENDING("ascending"),
     DESCENDING("descending");
 
-    private String fieldName;
+    private String sortOrderName;
 
-    SortOrder(String fieldName) {
-        this.fieldName = fieldName;
+    SortOrder(String sortOrderName) {
+        this.sortOrderName = sortOrderName;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getSortOrderName() {
+        return sortOrderName;
     }
 
     public static SortOrder fromName(String name) {
         return Arrays.stream(SortOrder.values())
-                .filter(sortOrder -> sortOrder.fieldName.equals(name))
+                .filter(sortOrder -> sortOrder.sortOrderName.equals(name))
                 .findAny()
                 .orElse(null);
     }

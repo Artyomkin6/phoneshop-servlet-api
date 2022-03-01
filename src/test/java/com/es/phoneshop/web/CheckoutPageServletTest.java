@@ -99,7 +99,7 @@ public class CheckoutPageServletTest {
 
         verify(response).sendRedirect(eq(ERROR_PATH_FORMAT));
     }
-    
+
     private void constructCart(Cart cart) {
         Product defaultProduct = new Product();
         CartItem defaultCartItem = new CartItem(defaultProduct, DEFAULT_QUANTITY);
