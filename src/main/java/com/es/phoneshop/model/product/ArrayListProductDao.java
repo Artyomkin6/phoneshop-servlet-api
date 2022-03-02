@@ -51,6 +51,21 @@ public class ArrayListProductDao extends AbstractArrayListDao<Product> implement
         }
     }
 
+    @Override
+    public List<Product> searchProducts(String productCode, BigDecimal minPrice, BigDecimal maxPrice, Integer minStock) {
+        LOCK.readLock().lock();
+        try {
+            List<Product> validProducts = findProducts();
+            return validProducts.stream()
+                    .filter(new ProductCodePredicate(productCode))
+                    .filter(new ProductRangePricePredicate(minPrice, maxPrice))
+                    .filter(new ProductStockPredicate(minStock))
+                    .collect(Collectors.toList());
+        } finally {
+            LOCK.readLock().unlock();
+        }
+    }
+
     protected void add(Product product) throws InvalidProductException {
         if (ProductValidator.validateProduct(product)) {
             items.add(product);

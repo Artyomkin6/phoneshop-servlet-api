@@ -42,7 +42,8 @@ public abstract class AbstractProductServlet extends HttpServlet {
         recentProductsService = DefaultRecentProductsService.getInstance();
     }
 
-    protected void addProductToCart(HttpServletRequest request, HttpServletResponse response, Long productId) throws ServletException, IOException {
+    protected void addProductToCart(HttpServletRequest request, HttpServletResponse response, Long productId)
+            throws IOException {
         int quantity;
         try {
             quantity = parseQuantity(request);

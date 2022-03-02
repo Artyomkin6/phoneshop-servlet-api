@@ -43,7 +43,7 @@ public class ProductListPageServlet extends AbstractProductServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.valueOf(request.getParameter(PRODUCT_ID_PARAMETER));
         addProductToCart(request, response, productId);
     }

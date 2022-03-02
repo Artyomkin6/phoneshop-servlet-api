@@ -13,6 +13,11 @@
     <input name="query" value="${param.query}" placeholder="Search product...">
     <button>Search</button>
   </form>
+  <div>
+    <a href="${pageContext.servletContext.contextPath}/advancedSearch">
+      Advanced search
+    </a>
+  </div>
   <table>
     <thead>
       <tr>
